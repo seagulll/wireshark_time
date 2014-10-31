@@ -6,7 +6,6 @@ Created on Jun 9, 2014
 
 #! /usr/bin/python
 
-
 import optparse
 
 from datetime import datetime
@@ -34,7 +33,7 @@ Run it like this:
     print "The core network file is %s" %(options.core)
     
     print "The result will be put in the file %s" %(options.result)
-    
+
     return options.directory, options.access, options.core, options.result
 
 
@@ -390,8 +389,72 @@ def cal_dia(directory, access, core, result):
     result_file.close() 
     
 
+def cal_h248(directory, access, core, result):
+    core_file = open(directory + "//" + core, 'r')
+    core_add_req_time = []
+    for line in core_file:
+        if "Add=" in line and "Request" in line:
+            core_add_req_time.append(line.split()[1])
+    if len(core_add_req_time) == 0:
+        return
+    print core_add_req_time
+    core_file.close()
+    
+    core_file = open(directory + "//" + core, 'r')
+    core_add_rep_time = []
+    for line in core_file:
+        if "Reply" in line and "Add=" in line:
+            core_add_rep_time.append(line.split()[1])
+    print core_add_rep_time
+    core_file.close()
+
+    core_add_req_time = [datetime.strptime(r, '%H:%M:%S.%f') for r in core_add_req_time]
+    core_add_rep_time = [datetime.strptime(r, '%H:%M:%S.%f') for r in core_add_rep_time]
+    diff = [abs((a - c).total_seconds()) for a,c in zip(core_add_req_time, core_add_rep_time)]
+    print diff
+    
+    ave = sum(diff) / len(diff)
+    print ave
+    
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in diff + ["H.248 Add and Reply Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.close() 
+    
+
+    core_file = open(directory + "//" + core, 'r')
+    core_Modify_req_time = []
+    for line in core_file:
+        if "Modify=" in line and "Request" in line:
+            core_Modify_req_time.append(line.split()[1])
+    if len(core_Modify_req_time) == 0:
+        return
+    print core_Modify_req_time
+    core_file.close()
+    
+    core_file = open(directory + "//" + core, 'r')
+    core_Modify_rep_time = []
+    for line in core_file:
+        if "Reply" in line and "Modify=" in line:
+            core_Modify_rep_time.append(line.split()[1])
+    print core_Modify_rep_time
+    core_file.close()
+
+    core_Modify_req_time = [datetime.strptime(r, '%H:%M:%S.%f') for r in core_Modify_req_time]
+    core_Modify_rep_time = [datetime.strptime(r, '%H:%M:%S.%f') for r in core_Modify_rep_time]
+    diff = [abs((a - c).total_seconds()) for a,c in zip(core_Modify_req_time, core_Modify_rep_time)]
+    print diff
+    
+    ave = sum(diff) / len(diff)
+    print ave
+    
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in diff + ["H.248 Modify and Reply Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.close() 
+    
+    
 if __name__ == '__main__':
     parameters = parse_args()
+    
     cal_reg(*parameters)
     cal_inv(*parameters)
     cal_rin(*parameters)
@@ -403,6 +466,7 @@ if __name__ == '__main__':
     cal_mes(*parameters)
     cal_not(*parameters)
     cal_dia(*parameters)
+    cal_h248(*parameters)
     
     print "Done!"
 
