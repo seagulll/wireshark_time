@@ -137,7 +137,7 @@ def cal_ok(directory, access, core, result):
     access_file = open(directory + "//" + access, 'r')
     access_time = []
     for line in access_file:
-        if "Status: 200 OK, with session description" in line:
+        if "Status: 200 OK" in line:
             access_time.append(line.split()[1])
     if len(access_time) == 0:
         return
@@ -147,7 +147,7 @@ def cal_ok(directory, access, core, result):
     core_file = open(directory + "//" + core, 'r')
     core_time = []
     for line in core_file:
-        if "Status: 200 OK, with session description" in line:
+        if "Status: 200 OK" in line:
             core_time.append(line.split()[1])
     print core_time
     core_file.close()
