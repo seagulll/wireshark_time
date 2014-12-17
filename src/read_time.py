@@ -65,7 +65,7 @@ def cal_reg(directory, access, core, result):
     print ave
     
     result_file = open(directory + "//" + result, 'a')
-    result_file.writelines(str(i)+"\n" for i in diff + ["REGISTER (init) Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.writelines(str(i)+"\n" for i in diff + ["REGISTER Average delay: " + str(ave) + " secs" + "\n"])
     result_file.close()
     
 
