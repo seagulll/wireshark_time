@@ -444,11 +444,29 @@ def cal_h248(directory, access, core, result):
     diff = [abs((a - c).total_seconds()) for a,c in zip(core_Modify_req_time, core_Modify_rep_time)]
     print diff
     
-    ave = sum(diff) / len(diff)
-    print ave
+    req_180_time=[]
+    req_200_time=[]
+    for i in range (len(diff)):
+        if i % 2 == 0 :
+            req_180_time.append(diff[i])
+        else :
+            req_200_time.append(diff[i])
+
+    
+    req_180_time_ave = sum(req_180_time) / len(req_180_time)
+    
+    req_200_time_ave = sum(req_200_time) / len(req_200_time)
+    
+    print req_180_time
     
     result_file = open(directory + "//" + result, 'a')
-    result_file.writelines(str(i)+"\n" for i in diff + ["H.248 Modify and Reply Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.writelines(str(i)+"\n" for i in req_180_time + ["H.248 Modify and Reply Average delay for 180 Ringing message: " + str(req_180_time_ave) + " secs" + "\n"])
+    result_file.close() 
+    
+    print req_200_time
+
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in req_200_time + ["H.248 Modify and Reply Average delay for 200 OK message: " + str(req_200_time_ave) + " secs" + "\n"])
     result_file.close() 
     
     
