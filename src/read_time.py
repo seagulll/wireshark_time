@@ -357,11 +357,11 @@ def cal_not(directory, access, core, result):
     result_file.close() 
     
 
-def cal_dia(directory, access, core, result):
+def cal_dia_e2(directory, access, core, result):
     core_file = open(directory + "//" + core, 'r')
     core_time_1 = []
     for line in core_file:
-        if "cmd=AARequest" in line:
+        if "cmd=User-Data Request" in line:
             core_time_1.append(line.split()[1])
     if len(core_time_1) == 0:
         return
@@ -371,7 +371,7 @@ def cal_dia(directory, access, core, result):
     core_file = open(directory + "//" + core, 'r')
     core_time_2 = []
     for line in core_file:
-        if "cmd=AAAnswer" in line:
+        if "cmd=User-Data Answer" in line:
             core_time_2.append(line.split()[1])
     print core_time_2
     core_file.close()
@@ -385,7 +385,39 @@ def cal_dia(directory, access, core, result):
     print ave
     
     result_file = open(directory + "//" + result, 'a')
-    result_file.writelines(str(i)+"\n" for i in diff + ["DIAMETER Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.writelines(str(i)+"\n" for i in diff + ["DIAMETER e2 Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.close() 
+    
+
+def cal_dia_rq(directory, access, core, result):
+    core_file = open(directory + "//" + core, 'r')
+    core_time_1 = []
+    for line in core_file:
+        if "cmd=AA Request" in line:
+            core_time_1.append(line.split()[1])
+    if len(core_time_1) == 0:
+        return
+    print core_time_1
+    core_file.close()
+    
+    core_file = open(directory + "//" + core, 'r')
+    core_time_2 = []
+    for line in core_file:
+        if "cmd=AA Answer" in line:
+            core_time_2.append(line.split()[1])
+    print core_time_2
+    core_file.close()
+
+    core_time_1 = [datetime.strptime(r, '%H:%M:%S.%f') for r in core_time_1]
+    core_time_2 = [datetime.strptime(r, '%H:%M:%S.%f') for r in core_time_2]
+    diff = [abs((a - c).total_seconds()) for a,c in zip(core_time_1, core_time_2)]
+    print diff
+    
+    ave = sum(diff) / len(diff)
+    print ave
+    
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in diff + ["DIAMETER Rq Average delay: " + str(ave) + " secs" + "\n"])
     result_file.close() 
     
 
@@ -419,7 +451,6 @@ def cal_h248(directory, access, core, result):
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["H.248 Add and Reply Average delay: " + str(ave) + " secs" + "\n"])
     result_file.close() 
-    
 
     core_file = open(directory + "//" + core, 'r')
     core_Modify_req_time = []
@@ -452,7 +483,6 @@ def cal_h248(directory, access, core, result):
         else :
             req_200_time.append(diff[i])
 
-    
     req_180_time_ave = sum(req_180_time) / len(req_180_time)
     
     req_200_time_ave = sum(req_200_time) / len(req_200_time)
@@ -483,7 +513,8 @@ if __name__ == '__main__':
     cal_pub(*parameters)
     cal_mes(*parameters)
     cal_not(*parameters)
-    cal_dia(*parameters)
+    cal_dia_e2(*parameters)
+    cal_dia_rq(*parameters)
     cal_h248(*parameters)
     
     print "Done!"
