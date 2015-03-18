@@ -520,6 +520,6 @@ if __name__ == '__main__':
     cal_dia_rq(*parameters)
     cal_h248(*parameters)
     
-    print "Done!"
+    print "Well Done!"
 
 
