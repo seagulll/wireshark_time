@@ -82,7 +82,7 @@ def cal_reg(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP Register signaling average delay: " + str(ave)
+    print "SIP Register signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["REGISTER Average delay: " + str(ave) + " secs" + "\n"])
@@ -105,6 +105,8 @@ def cal_inv(directory, access, core, result):
     if len(access_call_ID) == 0:
         return
     ## print access_time
+    print "SIP Invite access side time: " + str(access_time)
+    print "SIP Invite access side call_id: " + str(access_call_ID)
     access_file.close()
 
     core_file = open(directory + "//" + core, 'r')
@@ -113,9 +115,13 @@ def cal_inv(directory, access, core, result):
     for line in core_file:
         if "Request: INVITE" in line:
             core_time.append(line.split()[1])
-        if "Call-ID:" in line:
+        if "Call-ID: " in line:
             core_call_ID.append(line.split()[1])
+        elif "Call-ID:" in line:
+            core_call_ID.append(line.split()[0][8:])
     ## print core_time
+    print "SIP Invite core side time: " + str(core_time)
+    print  "SIP Invite core side call_id: " + str(core_call_ID)
     core_file.close()
 
     access_time_f = []
@@ -133,7 +139,7 @@ def cal_inv(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP Invite signaling average delay: " + str(ave)
+    print "SIP Invite signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["INVITE Average delay: " + str(ave) + " secs" + "\n"])
@@ -164,8 +170,10 @@ def cal_rin(directory, access, core, result):
     for line in core_file:
         if "Status: 180 Ringing" in line:
             core_time.append(line.split()[1])
-        if "Call-ID:" in line:
+        if "Call-ID: " in line:
             core_call_ID.append(line.split()[1])
+        elif "Call-ID:" in line:
+            core_call_ID.append(line.split()[0][8:])
     ## print core_time
     core_file.close()
 
@@ -184,7 +192,7 @@ def cal_rin(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP 180 Ringing signaling average delay: " + str(ave)
+    print "SIP 180 Ringing signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["180 Ringing Average delay: " + str(ave) + " secs" + "\n"])
@@ -215,8 +223,10 @@ def cal_ok(directory, access, core, result):
     for line in core_file:
         if "Status: 200 OK" in line:
             core_time.append(line.split()[1])
-        if "Call-ID:" in line:
+        if "Call-ID: " in line:
             core_call_ID.append(line.split()[1])
+        elif "Call-ID:" in line:
+            core_call_ID.append(line.split()[0][8:])
     ## print core_time
     core_file.close()
 
@@ -235,7 +245,7 @@ def cal_ok(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP 200 OK signaling average delay: " + str(ave)
+    print "SIP 200 OK signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["200 OK Average delay: " + str(ave) + " secs" + "\n"])
@@ -286,7 +296,7 @@ def cal_ack(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP ACK signaling average delay: " + str(ave)
+    print "SIP ACK signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["ACK Average delay: " + str(ave) + " secs" + "\n"])
@@ -337,7 +347,7 @@ def cal_bye(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP BYE signaling average delay: " + str(ave)
+    print "SIP BYE signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["BYE Average delay: " + str(ave) + " secs" + "\n"])
@@ -388,7 +398,7 @@ def cal_sub(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP SUBSCRIBE signaling average delay: " + str(ave)
+    print "SIP SUBSCRIBE signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["SUBSCRIBE Average delay: " + str(ave) + " secs" + "\n"])
@@ -439,7 +449,7 @@ def cal_pub(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP PUBLISH signaling average delay: " + str(ave)
+    print "SIP PUBLISH signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["PUBLISH Average delay: " + str(ave) + " secs" + "\n"])
@@ -490,7 +500,7 @@ def cal_mes(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP MESSAGE signaling average delay: " + str(ave)
+    print "SIP MESSAGE signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["MESSAGE Average delay: " + str(ave) + " secs" + "\n"])
@@ -541,7 +551,7 @@ def cal_not(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "SIP NOTIFY signaling average delay: " + str(ave)
+    print "SIP NOTIFY signaling average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["NOTIFY Average delay: " + str(ave) + " secs" + "\n"])
@@ -574,7 +584,7 @@ def cal_dia_e2(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "DIAMETER e2 interface average delay: " + str(ave)
+    print "DIAMETER e2 interface average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["DIAMETER e2 Average delay: " + str(ave) + " secs" + "\n"])
@@ -607,7 +617,7 @@ def cal_dia_rq(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "DIAMETER rq interface average delay: " + str(ave)
+    print "DIAMETER rq interface average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["DIAMETER Rq Average delay: " + str(ave) + " secs" + "\n"])
@@ -641,7 +651,7 @@ def cal_h248(directory, access, core, result):
     print "Total " + str(len(diff)) + " messages are measured."
     
     ave = sum(diff) / len(diff)
-    print "MEGACO Add and reply for INVITE average delay: " + str(ave)
+    print "MEGACO Add and reply for INVITE average delay: " + str(ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["H.248 Add and Reply Average delay: " + str(ave) + " secs" + "\n"])
@@ -684,7 +694,7 @@ def cal_h248(directory, access, core, result):
     
     print "MEGACO Modify and reply for 180 Ringing delays: " + str(req_180_time)
     print "Total " + str(len(req_180_time)) + " messages are measured."
-    print "MEGACO Modify and reply for 180 Ringing average delays: " + str(req_180_time_ave)
+    print "MEGACO Modify and reply for 180 Ringing average delays: " + str(req_180_time_ave) + " secs"
     
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in req_180_time + ["H.248 Modify and Reply Average delay for 180 Ringing message: " + str(req_180_time_ave) + " secs" + "\n"])
@@ -692,7 +702,7 @@ def cal_h248(directory, access, core, result):
     
     print "MEGACO Modify and reply for 200 OK delays: " + str(req_200_time)
     print "Total " + str(len(req_200_time)) + " messages are measured."
-    print "MEGACO Modify and reply for 200 OK average delays: " + str(req_200_time_ave)
+    print "MEGACO Modify and reply for 200 OK average delays: " + str(req_200_time_ave) + " secs"
 
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in req_200_time + ["H.248 Modify and Reply Average delay for 200 OK message: " + str(req_200_time_ave) + " secs" + "\n"])
