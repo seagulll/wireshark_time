@@ -371,6 +371,8 @@ def cal_sub(directory, access, core, result):
         return
     ## print access_time
     access_file.close()
+    print access_time
+    print access_call_ID
 
     core_file = open(directory + "//" + core, 'r')
     core_time = []
@@ -382,6 +384,8 @@ def cal_sub(directory, access, core, result):
             core_call_ID.append(line.split()[1])
     ## print core_time
     core_file.close()
+    print core_time
+    print core_call_ID
 
     access_time_f = []
     core_time_f = []
@@ -473,6 +477,8 @@ def cal_mes(directory, access, core, result):
         return
     ## print access_time
     access_file.close()
+    print access_time
+    print access_call_ID
 
     core_file = open(directory + "//" + core, 'r')
     core_time = []
@@ -484,6 +490,8 @@ def cal_mes(directory, access, core, result):
             core_call_ID.append(line.split()[1])
     ## print core_time
     core_file.close()
+    print core_time
+    print core_call_ID
 
     access_time_f = []
     core_time_f = []
@@ -623,6 +631,116 @@ def cal_dia_rq(directory, access, core, result):
     result_file.writelines(str(i)+"\n" for i in diff + ["DIAMETER Rq Average delay: " + str(ave) + " secs" + "\n"])
     result_file.close() 
     
+    
+def cal_dia_rx_aaraaa(directory, access, core, result):
+    aar_file = open(directory + "//" + access, 'r')
+    aar_time = []
+    aar_hbh_id = []
+    for line in aar_file:
+        if "cmd=AA Request" in line:
+            aar_time.append(line.split()[1])
+        if "Hop-by-Hop" in line:
+            aar_hbh_id.append(line.split()[2])
+    if len(aar_time) == 0:
+        return
+    if len(aar_hbh_id) == 0:
+        return
+    aar_file.close()
+    print "AAR time: " + str(aar_time)
+    print "AAR HBH ID: " + str(aar_hbh_id)
+    
+    aaa_file = open(directory + "//" + core, 'r')
+    aaa_time = []
+    aaa_hbh_id = []
+    for line in aaa_file:
+        if "cmd=AA Answer" in line:
+            aaa_time.append(line.split()[1])
+        if "Hop-by-Hop" in line:
+            aaa_hbh_id.append(line.split()[2])
+    if len(aaa_time) == 0:
+        return
+    if len(aaa_hbh_id) == 0:
+        return
+    aaa_file.close()            
+    print "AAA time: " + str(aaa_time)
+    print "AAA HBH ID: " + str(aaa_hbh_id)
+    
+    aar_time_f = []
+    aaa_time_f = []
+    for c in range (0, len(aaa_hbh_id)):
+        for a in range (0, len(aar_hbh_id)):
+            if aaa_hbh_id[c] == aar_hbh_id[a]:
+                aar_time_f.append(aar_time[a])
+                aaa_time_f.append(aaa_time[c])
+    
+    aar_time_f = [datetime.strptime(r, '%H:%M:%S.%f') for r in aar_time_f]
+    aaa_time_f = [datetime.strptime(r, '%H:%M:%S.%f') for r in aaa_time_f]
+    diff = [abs((a - c).total_seconds()) for a,c in zip(aar_time_f, aaa_time_f)]
+    print "Diameter Rx AAR/AAA signaling delays: " + str(diff)
+    print "Total " + str(len(diff)) + " messages are measured."
+    
+    ave = sum(diff) / len(diff)
+    print "Diameter Rx AAR/AAA signaling average delay: " + str(ave) + " secs"
+    
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in diff + ["Diameter Rx AAR/AAA Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.close()
+
+
+def cal_dia_rx_rarraa(directory, access, core, result):
+    rar_file = open(directory + "//" + access, 'r')
+    rar_time = []
+    rar_hbh_id = []
+    for line in rar_file:
+        if "cmd=Re-Auth Request" in line:
+            rar_time.append(line.split()[1])
+        if "Hop-by-Hop" in line:
+            rar_hbh_id.append(line.split()[2])
+    if len(rar_time) == 0:
+        return
+    if len(rar_hbh_id) == 0:
+        return
+    rar_file.close()
+    print "rar time: " + str(rar_time)
+    print "rar HBH ID: " + str(rar_hbh_id)
+    
+    raa_file = open(directory + "//" + core, 'r')
+    raa_time = []
+    raa_hbh_id = []
+    for line in raa_file:
+        if "cmd=Re-Auth Answer" in line:
+            raa_time.append(line.split()[1])
+        if "Hop-by-Hop" in line:
+            raa_hbh_id.append(line.split()[2])
+    if len(raa_time) == 0:
+        return
+    if len(raa_hbh_id) == 0:
+        return
+    raa_file.close()            
+    print "raa time: " + str(raa_time)
+    print "raa HBH ID: " + str(raa_hbh_id)
+    
+    rar_time_f = []
+    raa_time_f = []
+    for c in range (0, len(raa_hbh_id)):
+        for a in range (0, len(rar_hbh_id)):
+            if raa_hbh_id[c] == rar_hbh_id[a]:
+                rar_time_f.append(rar_time[a])
+                raa_time_f.append(raa_time[c])
+                
+    rar_time_f = [datetime.strptime(r, '%H:%M:%S.%f') for r in rar_time_f]
+    raa_time_f = [datetime.strptime(r, '%H:%M:%S.%f') for r in raa_time_f]
+    diff = [abs((a - c).total_seconds()) for a,c in zip(rar_time_f, raa_time_f)]
+    print "Diameter Rx RAR/RAA signaling delays: " + str(diff)
+    print "Total " + str(len(diff)) + " messages are measured."
+    
+    ave = sum(diff) / len(diff)
+    print "Diameter Rx RAR/RAA signaling average delay: " + str(ave) + " secs"
+    
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in diff + ["Diameter Rx RAR/RAA Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.close() 
+
 
 def cal_h248(directory, access, core, result):
     #### Measure MEGACO Add and reply delay.
@@ -729,6 +847,8 @@ if __name__ == '__main__':
     cal_dia_e2(dire, acc, core, res)
     cal_dia_rq(dire, acc, core, res)
     cal_h248(dire, acc, core, res)
+    cal_dia_rx_aaraaa(dire, acc, core, res)
+    cal_dia_rx_rarraa(dire, acc, core, res)
 
     print "Done!"
 
