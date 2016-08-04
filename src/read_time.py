@@ -685,6 +685,61 @@ def cal_dia_rx_aaraaa(directory, access, core, result):
     result_file = open(directory + "//" + result, 'a')
     result_file.writelines(str(i)+"\n" for i in diff + ["Diameter Rx AAR/AAA Average delay: " + str(ave) + " secs" + "\n"])
     result_file.close()
+    
+    
+def cal_dia_rx_aaarar(directory, access, core, result):    
+    aaa_file = open(directory + "//" + access, 'r')
+    aaa_time = []
+    aaa_hbh_id = []
+    for line in aaa_file:
+        if "cmd=AA Answer" in line:
+            aaa_time.append(line.split()[1])
+        if "Hop-by-Hop" in line:
+            aaa_hbh_id.append(line.split()[2])
+    if len(aaa_time) == 0:
+        return
+    if len(aaa_hbh_id) == 0:
+        return
+    aaa_file.close()            
+    print "AAA time: " + str(aaa_time)
+    print "AAA HBH ID: " + str(aaa_hbh_id)
+    
+    rar_file = open(directory + "//" + core, 'r')
+    rar_time = []
+    rar_hbh_id = []
+    for line in rar_file:
+        if "cmd=Re-Auth Request" in line:
+            rar_time.append(line.split()[1])
+        if "Hop-by-Hop" in line:
+            rar_hbh_id.append(line.split()[2])
+    if len(rar_time) == 0:
+        return
+    if len(rar_hbh_id) == 0:
+        return
+    rar_file.close()
+    print "rar time: " + str(rar_time)
+    print "rar HBH ID: " + str(rar_hbh_id)
+    
+    aaa_time_f = []
+    rar_time_f = []
+    for c in range (0, len(rar_hbh_id)):
+        for a in range (0, len(aaa_hbh_id)):
+            if rar_hbh_id[c] == aaa_hbh_id[a]:
+                aaa_time_f.append(aaa_time[a])
+                rar_time_f.append(rar_time[c])
+    
+    aaa_time_f = [datetime.strptime(r, '%H:%M:%S.%f') for r in aaa_time_f]
+    rar_time_f = [datetime.strptime(r, '%H:%M:%S.%f') for r in rar_time_f]
+    diff = [abs((a - c).total_seconds()) for a,c in zip(aaa_time_f, rar_time_f)]
+    print "Diameter Rx AAA/RAR signaling delays: " + str(diff)
+    print "Total " + str(len(diff)) + " messages are measured."
+    
+    ave = sum(diff) / len(diff)
+    print "Diameter Rx AAA/RAR signaling average delay: " + str(ave) + " secs"
+    
+    result_file = open(directory + "//" + result, 'a')
+    result_file.writelines(str(i)+"\n" for i in diff + ["Diameter Rx AAA/RAR Average delay: " + str(ave) + " secs" + "\n"])
+    result_file.close()   
 
 
 def cal_dia_rx_rarraa(directory, access, core, result):
@@ -848,6 +903,7 @@ if __name__ == '__main__':
     cal_dia_rq(dire, acc, core, res)
     cal_h248(dire, acc, core, res)
     cal_dia_rx_aaraaa(dire, acc, core, res)
+    cal_dia_rx_aaarar(dire, acc, core, res)
     cal_dia_rx_rarraa(dire, acc, core, res)
 
     print "Done!"
